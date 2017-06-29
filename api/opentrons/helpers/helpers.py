@@ -1,8 +1,18 @@
 import json
 import numbers
+import os
 
 from opentrons.util.vector import Vector
 
+
+def log_cmd(func):
+    def wrapper(*args, **kwargs):
+        gfile = os.environ.get('GCODE_FILE')
+        if gfile:
+            with open(gfile, 'a') as gf:
+                gf.write(func.__name__ +'\n')
+        return func(*args, **kwargs)
+    return wrapper
 
 def is_number(obj):
     return isinstance(obj, numbers.Number)

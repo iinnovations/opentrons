@@ -237,6 +237,7 @@ class Pipette(Instrument):
         if not self.placeables or (placeable != self.placeables[-1]):
             self.placeables.append(placeable)
 
+    @helpers.log_cmd
     def move_to(self, location, strategy='arc'):
         """
         Move this :any:`Pipette` to a :any:`Placeable` on the :any:`Deck`
@@ -271,6 +272,7 @@ class Pipette(Instrument):
 
         return self
 
+    @helpers.log_cmd
     def aspirate(self, volume=None, location=None, rate=1.0):
         """
         Aspirate a volume of liquid (in microliters/uL) using this pipette
@@ -359,6 +361,7 @@ class Pipette(Instrument):
         self.current_volume += volume  # update after actual aspirate
         return self
 
+    @helpers.log_cmd
     def dispense(self,
                  volume=None,
                  location=None,
@@ -738,6 +741,7 @@ class Pipette(Instrument):
         self.drop_tip(self.current_tip(), home_after=home_after)
         return self
 
+    @helpers.log_cmd
     def pick_up_tip(self, location=None, presses=3):
         """
         Pick up a tip for the Pipette to run liquid-handling commands with
@@ -808,6 +812,7 @@ class Pipette(Instrument):
         self.robot.add_command(_description)
         return self
 
+    @helpers.log_cmd
     def drop_tip(self, location=None, home_after=True):
         """
         Drop the pipette's current tip

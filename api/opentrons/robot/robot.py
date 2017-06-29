@@ -69,6 +69,7 @@ class InstrumentMotor(object):
             mode=mode, **kwargs
         )
 
+    @helpers.log_cmd
     def home(self):
         """
         Home plunger motor.
