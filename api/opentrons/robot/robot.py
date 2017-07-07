@@ -155,7 +155,7 @@ class Robot(object, metaclass=Singleton):
     _commands = None  # []
     _instance = None
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         Initializes a robot instance.
 
@@ -183,7 +183,35 @@ class Robot(object, metaclass=Singleton):
         self._driver = None
         self.arc_height = 5
         self.set_connection('simulate')
-        self.reset()
+
+        """ IVL Added """
+        import basebotlib
+
+        if 'system_db' in kwargs:
+            self.system_db = kwargs['system_db']
+        else:
+            self.system_db = basebotlib.sysvars.dbs.system
+
+        if 'stateful' in kwargs:
+            print('initializing in stateful mode.')
+            self.stateful = True
+
+            # state_data = self.load_db_state()
+            # if not state_data:
+            #     print('Resetting, connecting, and creating new db state, since none exists.')
+            #     self.reset()
+            #     self.connect()
+            #     self.publish_db_state()
+
+            # TODO: remove hard-coded paths
+
+        else:
+            self.stateful = False
+            self.reset()
+
+            """ End IVL Added -- the reset below is unconditional originally. """
+            # self.reset()
+        # self.reset()
 
     @classmethod
     def get_instance(cls):
@@ -409,6 +437,11 @@ class Robot(object, metaclass=Singleton):
             log.info('Executing: Home now')
             return _do()
 
+            """IVL added publish here."""
+            if self.stateful:
+                self.publish_db_state()
+            return result
+
     def comment(self, description):
         def _do():
             pass
@@ -434,6 +467,13 @@ class Robot(object, metaclass=Singleton):
 
     def move_head(self, *args, **kwargs):
         self._driver.move_head(*args, **kwargs)
+        """ IVL ADDED"""
+        if self.stateful:
+            state_insert = self.publish_db_state()
+            print('PUBLISHING')
+            return state_insert
+        else:
+            return None
 
     def move_plunger(self, *args, **kwargs):
         self._driver.move_plunger(*args, **kwargs)
